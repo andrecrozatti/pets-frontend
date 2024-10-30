@@ -11,7 +11,7 @@ import { useAuth } from '../hooks/useAuth';
 
 
 const AppRoutes: React.FC = () => {
-    const { token } = useAuth();
+    const { token } = useAuth()
 
     if (token) {
 

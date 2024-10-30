@@ -9,7 +9,7 @@ export const OpenRoutes: React.FC = () => {
   return (
     <Routes>
       <Route path="/login" element={<SignIn />} />
-      <Route path="/sign-up" element={<SignUp />} /> 
+      <Route path="/signup" element={<SignUp />} /> 
       <Route path="*" element={<Navigate to="/login" />} />
     </Routes>
   );

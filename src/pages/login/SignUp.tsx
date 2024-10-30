@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Box, Button, TextField, Typography } from '@mui/material';
 import { useAuth } from '../../hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -11,10 +12,13 @@ const RegisterForm: React.FC = () => {
   const [username, setUserName] = useState('');
   const { register } = useAuth();
 
+
+  const navigate = useNavigate()
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     try {
       await register(email, password, username);
+      navigate("/login")
     } catch (error) {
       alert('Erro ao cadastrar');
     }

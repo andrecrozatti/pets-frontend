@@ -2,16 +2,13 @@
 import React from 'react';
 import { Paper, Typography, Box, Avatar, IconButton } from '@mui/material';
 import { Pet } from '../../types/pet';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
+
 
 interface PetCardProps {
   pet: Pet;
-  onEdit: () => void;
-  onDelete: () => void;
 }
 
-const PetCard: React.FC<PetCardProps> = ({ pet, onEdit, onDelete }) => {
+const PetCard: React.FC<PetCardProps> = ({ pet, }) => {
   return (
     <Paper
       elevation={3}
@@ -23,17 +20,6 @@ const PetCard: React.FC<PetCardProps> = ({ pet, onEdit, onDelete }) => {
         textAlign: 'center',
       }}
     >
-
-      {/* Botões de Edição e Remoção */}
-
-
-      <IconButton color="primary" onClick={onEdit}>
-        <EditIcon />
-      </IconButton>
-      <IconButton color="error" onClick={onDelete}>
-        <DeleteIcon />
-      </IconButton>
-
 
       {/* Imagem do Pet */}
       <Avatar

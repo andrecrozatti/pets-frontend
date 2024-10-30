@@ -45,6 +45,9 @@ const LoginForm: React.FC = () => {
             <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
                 Entrar
             </Button>
+            <a href='signup'>
+                Cadastre-se
+            </a>
         </Box>
     );
 };

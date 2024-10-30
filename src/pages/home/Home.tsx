@@ -1,70 +1,86 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Pet } from "../../types/pet";
-import { Box, Button, Container, Typography } from "@mui/material";
+import { Box, Button, Container, IconButton, Typography } from "@mui/material";
 import PetCard from "../components/petCard";
-import { getPets } from "../../api/pets";
-
+import { createPet, deletePet, getPets, updatePet } from "../../api/pets";
+import PetFormDialog from "../pets/PetForm";
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import LogoutIcon from '@mui/icons-material/Logout';
+import { useAuth } from "../../hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 
 
 const Home: React.FC = () => {
     const [pets, setPets] = useState<Pet[]>([]); // Array para armazenar os pets
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [selectedPet, setSelectedPet] = useState<Pet | null>(null);
 
-    const handleEdit = () => {
-        console.log("Editando pet...");
-        // lógica de edição aqui
-    };
-
-    const handleDelete = () => {
-        console.log("Removendo pet...");
-        // lógica de remoção aqui
-    };
+    // Função para buscar a lista de pets
+    const fetchPets = useCallback(async () => {
+        try {
+            
+            const data = await getPets();
+            setPets(data);
+        } catch (error) {
+            console.error('Error fetching pets:', error);
+        }
+    }, [])
 
     useEffect(() => {
-        //Fetch API para buscar os pets
-        // getPets()
-        //     .then(response => response)
-        //     .then(data => setPets(data))
-        //     .catch(error => console.error('Error:', error))
+        // Chama fetchPets ao montar o componente
+        
+        getPets().then(response => {
+            setPets(response)
+        })
+    }, []);
 
-        // Simulando a busca de dados
-        const examplePets: Pet[] = [
-            {
-                name: 'Rex',
-                age: 5,
-                gender: 'Masculino',
-                breed: 'Salsicha',
-                photoUrl: 'https://images.unsplash.com/photo-1518887499460-71d222eed89d?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-            },
-            {
-                name: 'Buddy',
-                age: 3,
-                gender: 'Masculino',
-                breed: 'Beagle',
-                photoUrl: 'https://images.unsplash.com/photo-1518887499460-71d222eed89d?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-            },
-            {
-                name: 'Buddy',
-                age: 3,
-                gender: 'Masculino',
-                breed: 'Beagle',
-                photoUrl: 'https://images.unsplash.com/photo-1518887499460-71d222eed89d?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-            }
-            ,
-            {
-                name: 'Buddy',
-                age: 3,
-                gender: 'Masculino',
-                breed: 'Beagle',
-                photoUrl: 'https://images.unsplash.com/photo-1518887499460-71d222eed89d?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-            }
-        ]
-        setPets(examplePets);
-    }, [])
+    const { logout } = useAuth()
+
+
+    const handleOpenDialog = (pet?: Pet) => {
+        setSelectedPet(pet || null); // Se um pet for fornecido, edita; caso contrário, cria novo
+        setDialogOpen(true);
+    };
+
+    const handleCloseDialog = () => {
+        setDialogOpen(false);
+        setSelectedPet(null);
+    };
+
+
+
+    const handleSavePet = async (petData: Pet) => {
+        if (selectedPet) {
+            // Editando um pet existente
+            await updatePet(selectedPet.id, petData);
+        } else {
+            // Criando um novo pet
+            await createPet(petData);
+        }
+        handleCloseDialog();
+
+        // Recarregar ou atualizar lista de pets, se necessário
+        fetchPets()
+    };
+
+    const handleDeletePet = async (id: number) => {
+        await deletePet(id)
+        fetchPets()
+    }
+
 
 
     return (
         <Container>
+            <IconButton
+                color="error"
+                size="medium"
+                onClick={async () => { await logout() }}
+            >
+                <LogoutIcon />
+            </IconButton>
             {/* Hero Section */}
             <Box
                 sx={{
@@ -83,7 +99,12 @@ const Home: React.FC = () => {
                     position: 'relative',
                 }}
             >
-
+                <PetFormDialog
+                    open={dialogOpen}
+                    onClose={handleCloseDialog}
+                    onSave={handleSavePet}
+                    petData={selectedPet ?? undefined} // Se um pet for selecionado, passa seus dados para edição
+                />
                 <Box sx={{ position: 'relative', zIndex: 1, padding: 3 }}>
                     <Typography variant="h2" component="h1" fontWeight="bold" gutterBottom>
                         Bem-vindo ao Pet+
@@ -96,30 +117,39 @@ const Home: React.FC = () => {
                         color="secondary"
                         size="large"
                         sx={{ mt: 3 }}
-                        href="#pet-form"
+                        onClick={() => handleOpenDialog()}
                     >
-                        Comece Agora
+                        Adicione um Pet
                     </Button>
                 </Box>
             </Box>
 
-            {/* Formulário de Cadastro de Pets */}
-            <Box id="list-pets" sx={{ mt: 6, padding: 2 }}>
-                {/* <PetForm /> */}
-
-            </Box>
 
             {/* Lista de Pets */}
-            <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 6 }}>
+            <Box sx={{
+                display: 'flex', justifyContent: 'space-around', marginTop: 2,
+                alignItems: 'center',
+            }}>
 
                 {pets.map((pet, index) => {
 
                     return (
-                        <PetCard
-                            key={index}
-                            pet={pet}
-                            onEdit={handleEdit} onDelete={handleDelete}
-                        />
+                        <Box key={index}>
+
+                            {/* Botões de Edição e Remoção */}
+
+                            <IconButton color="primary" onClick={() => { handleOpenDialog(pet) }}>
+                                <EditIcon />
+                            </IconButton>
+                            <IconButton color="error" onClick={() => { handleDeletePet(pet.id) }}>
+                                <DeleteIcon />
+                            </IconButton>
+
+                            <PetCard
+                                pet={pet}
+                            />
+                        </Box >
+
                     )
                 })}
 
