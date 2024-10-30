@@ -21,8 +21,28 @@ const Home: React.FC = () => {
     const fetchPets = useCallback(async () => {
         try {
             
-            const data = await getPets();
-            setPets(data);
+            // const data = await getPets();
+            // setPets(data);
+            setPets([{
+                "id": 5,
+                "name": "Princess",
+                "age": 2,
+                "breed": "Golden Retriever",
+                "color": "Brown",
+                "gender": "Female",
+                "photoUrl": "https://images.unsplash.com/photo-1583512603805-3cc6b41f3edb?q=80&w=1780&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              },
+              {
+                "id": 5,
+                "name": "Rex",
+                "age": 2,
+                "breed": "Poofle",
+                "color": "White",
+                "gender": "Male",
+                "photoUrl" :"https://images.unsplash.com/photo-1532353949707-2e77707ee8a7?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              }
+            
+            ])
         } catch (error) {
             console.error('Error fetching pets:', error);
         }
@@ -30,10 +50,7 @@ const Home: React.FC = () => {
 
     useEffect(() => {
         // Chama fetchPets ao montar o componente
-        
-        getPets().then(response => {
-            setPets(response)
-        })
+        fetchPets()
     }, []);
 
     const { logout } = useAuth()

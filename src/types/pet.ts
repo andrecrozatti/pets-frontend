@@ -2,8 +2,9 @@ export type Pet = {
     id: number;
     name: string;
     age: number;
-    gender: 'Masculino' | 'Feminino';
+    gender: 'Male' | 'Female';
+    color:string;
     breed: string;
-    photoUrl: string;
+    photoUrl?: string;
 
 }
